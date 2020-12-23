@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:text="除了进入App的密码以外没什么可设置的"
+        android:text="密码会用于加密，改动后会重新刷新数据库，建议你还是不要随便改的好~~"
         android:textColor="#444"
         android:textSize="18sp" />
 

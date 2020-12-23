@@ -1,5 +1,6 @@
 package com.zqx.pwd.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -105,15 +106,16 @@ public class AccountsActivity extends AppCompatActivity implements
             case R.id.action_setting:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
-            case R.id.action_hide_pwd:
+           /* case R.id.action_hide_pwd:
                 GlobalData.toggleHidePwd();
                 mAdapter.notifyDataSetChanged();
-                break;
+                break;*/
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuBuilder menuBuilder = (MenuBuilder) menu;

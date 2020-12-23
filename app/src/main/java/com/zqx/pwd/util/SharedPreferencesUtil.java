@@ -8,12 +8,12 @@ import java.util.Set;
 
 import static com.zqx.pwd.MyApp.context;
 
-public class SpUtil {
+public class SharedPreferencesUtil {
 
     private static final String            SP_NAME = "config";
     private static       SharedPreferences sp      = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
 
-    private SpUtil() {
+    private SharedPreferencesUtil() {
     }
 
     public static void putBoolean(String key, boolean value) {

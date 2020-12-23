@@ -8,6 +8,8 @@ public class AccountBean {
     public String name;
     public String pwd;
     public int    id;
+    public boolean encryptedName;
+    public boolean encryptedPwd;
 
     public AccountBean() {
     }

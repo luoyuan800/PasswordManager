@@ -20,9 +20,11 @@ import android.widget.TextView;
 import com.zqx.pwd.R;
 import com.zqx.pwd.event.PwdChangedEvent;
 import com.zqx.pwd.global.Spkey;
+import com.zqx.pwd.model.manager.EncryptManager;
 import com.zqx.pwd.ui.dialog.PwdSettingDialog;
-import com.zqx.pwd.util.SpUtil;
+import com.zqx.pwd.util.SharedPreferencesUtil;
 import com.zqx.pwd.util.StatusBarUtil;
+import com.zqx.pwd.util.StringUtil;
 import com.zqx.pwd.util.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -57,7 +59,7 @@ public class CheckInActivity extends AppCompatActivity implements TextView.OnEdi
     @Override
     protected void onResume() {
         super.onResume();
-        mPwd = SpUtil.getString(Spkey.PWD, "");
+        mPwd = SharedPreferencesUtil.getString(Spkey.PWD, "");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFinManager = ((FingerprintManager) getSystemService(FINGERPRINT_SERVICE));
             if (mFinManager.isHardwareDetected()) {
@@ -128,7 +130,7 @@ public class CheckInActivity extends AppCompatActivity implements TextView.OnEdi
     public void onPrintClicked() {
         countPrintClick++;
         if (countPrintClick == 5) {
-            String pwd = SpUtil.getString(Spkey.PWD, "");
+            String pwd = SharedPreferencesUtil.getString(Spkey.PWD, "");
             ToastUtil.show("你的密码是:"+pwd);
             countPrintClick = 0;
         }
@@ -141,6 +143,7 @@ public class CheckInActivity extends AppCompatActivity implements TextView.OnEdi
             return;
         }
         if (TextUtils.equals(mPwd, pwd)) {
+            EncryptManager.init(mPwd);
             startActivity(new Intent(this, AccountsActivity.class));
             finish();
         } else {
@@ -174,6 +177,11 @@ public class CheckInActivity extends AppCompatActivity implements TextView.OnEdi
             super.onAuthenticationSucceeded(result);
             CheckInActivity activity = mActivity.get();
             if (activity != null) {
+                if(StringUtil.hasEmpty(activity.mPwd)){
+                    activity.mPwd = result.hashCode() + "@";
+                    SharedPreferencesUtil.saveString(Spkey.PWD, activity.mPwd);
+                }
+                EncryptManager.init(activity.mPwd);
                 activity.startActivity(new Intent(activity, AccountsActivity.class));
                 activity.finish();
             }

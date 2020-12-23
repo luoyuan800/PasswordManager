@@ -38,6 +38,22 @@ public class AccountDao {
         opener.close();
         db.close();
     }
+    public static void saveAccounts(Context context, List<AccountBean> beans) {
+        DbOpener opener = new DbOpener(context.getApplicationContext());
+        SQLiteDatabase db = opener.getWritableDatabase();
+        for(AccountBean bean : beans) {
+            String sql = "insert into " + TABLE_NAME + " (" +
+                    C_SERVER + ", " +
+                    C_NAME + ", " +
+                    C_PWD + ") values (?,?,?)";
+
+
+            String[] args = new String[]{bean.server, bean.name, bean.pwd};
+            db.execSQL(sql, args);
+        }
+        opener.close();
+        db.close();
+    }
 
     public static int deleteAccount(Context context, AccountBean bean) {
         String[] param = new String[]{bean.id + ""};
@@ -82,7 +98,10 @@ public class AccountDao {
                 String server = cursor.getString(1);
                 String name = cursor.getString(2);
                 String pwd = cursor.getString(3);
-                list.add(new AccountBean(id, server, name, pwd));
+                AccountBean e = new AccountBean(id, server, name, pwd);
+                e.encryptedPwd = true;
+                e.encryptedName = true;
+                list.add(e);
             }
             cursor.close();
         }
@@ -104,6 +123,8 @@ public class AccountDao {
                 bean.server = cursor.getString(cursor.getColumnIndex(C_SERVER));
                 bean.name = cursor.getString(cursor.getColumnIndex(C_NAME));
                 bean.pwd = cursor.getString(cursor.getColumnIndex(C_PWD));
+                bean.encryptedName = true;
+                bean.encryptedPwd = true;
                 list.add(bean);
             }
             cursor.close();

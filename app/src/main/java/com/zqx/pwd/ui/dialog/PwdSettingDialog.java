@@ -12,13 +12,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.zqx.pwd.R;
+import com.zqx.pwd.dao.AccountDao;
 import com.zqx.pwd.event.PwdChangedEvent;
-import com.zqx.pwd.util.SpUtil;
+import com.zqx.pwd.model.bean.AccountBean;
+import com.zqx.pwd.model.manager.EncryptManager;
+import com.zqx.pwd.presenter.AccountsPresenter;
+import com.zqx.pwd.util.SharedPreferencesUtil;
 import com.zqx.pwd.global.Spkey;
 import com.zqx.pwd.util.StringUtil;
 import com.zqx.pwd.util.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,6 +42,7 @@ public class PwdSettingDialog extends Dialog implements TextView.OnEditorActionL
     @BindView(R.id.et_pwd0)
     EditText mEtPwd0;
     private String mPwd0; //CheckInActivity传进来的原始密码
+    private Context context;
 
     public PwdSettingDialog(Context context, String pwd) {
         super(context);
@@ -45,12 +52,16 @@ public class PwdSettingDialog extends Dialog implements TextView.OnEditorActionL
         ButterKnife.bind(this);
         initWindowParams();
         initView();
+        this.context = context;
     }
 
     private void initView() {
         if (TextUtils.isEmpty(mPwd0)) {
             mEtPwd0.setVisibility(View.GONE);
+        }else{
+            mEtPwd0.setText(mPwd0);
         }
+
         mEtPwd1.setOnEditorActionListener(this);
     }
 
@@ -76,7 +87,7 @@ public class PwdSettingDialog extends Dialog implements TextView.OnEditorActionL
 
     private void doConfirm() {
         String pwd0 = mEtPwd0.getText().toString().trim();
-        String pwd1 = mEtPwd1.getText().toString().trim();
+        final String pwd1 = mEtPwd1.getText().toString().trim();
         String pwd2 = mEtPwd2.getText().toString().trim();
         if (!TextUtils.equals(mPwd0, pwd0)) {
             ToastUtil.show("原密码错误");
@@ -90,7 +101,21 @@ public class PwdSettingDialog extends Dialog implements TextView.OnEditorActionL
             ToastUtil.show("两次密码输入不一致");
             return;
         }
-        SpUtil.saveString(Spkey.PWD, pwd1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<AccountBean> beans = AccountDao.getAllAccounts(context);
+                if(beans.size() > 0){
+                    EncryptManager.decryptAccountSet(beans);
+                }
+                SharedPreferencesUtil.saveString(Spkey.PWD, pwd1);
+                EncryptManager.init(pwd1);
+                for(AccountBean bean : beans) {
+                    EncryptManager.encryptAccount(bean);
+                }
+                AccountDao.saveAccounts(context, beans);
+            }
+        }).start();
         EventBus.getDefault().post(new PwdChangedEvent(pwd1));
         dismiss();
     }

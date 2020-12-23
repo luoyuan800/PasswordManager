@@ -8,7 +8,7 @@ import com.zqx.pwd.R;
 import com.zqx.pwd.event.PwdChangedEvent;
 import com.zqx.pwd.global.Spkey;
 import com.zqx.pwd.ui.dialog.PwdSettingDialog;
-import com.zqx.pwd.util.SpUtil;
+import com.zqx.pwd.util.SharedPreferencesUtil;
 import com.zqx.pwd.util.StatusBarUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,7 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mPwd0 = SpUtil.getString(Spkey.PWD, "");
+        mPwd0 = SharedPreferencesUtil.getString(Spkey.PWD, "");
     }
 
     @OnClick(R.id.btn_pwd_setting)

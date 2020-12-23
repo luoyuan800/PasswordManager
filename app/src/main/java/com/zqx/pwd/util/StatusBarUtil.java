@@ -22,7 +22,6 @@ public class StatusBarUtil {
     /**
      * 修改状态栏为全透明
      *
-     * @param activity
      */
     @TargetApi(19)
     public static void transparencyBar(Activity activity) {
@@ -62,7 +61,6 @@ public class StatusBarUtil {
      * 设置状态栏黑色字体图标，
      * 适配4.4以上版本MIUIV、Flyme和6.0以上版本其他Android
      *
-     * @param activity
      * @return 1:MIUUI 2:Flyme 3:android6.0
      */
     public static int setLightMode(Activity activity) {
