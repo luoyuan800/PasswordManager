@@ -110,7 +110,6 @@ public class EncryptManager {
 
 
     public static void decryptAccount(AccountBean bean) {
-        Cipher cipher;
         try {
             initKey();
             if (bean.encryptedName) {
@@ -119,8 +118,9 @@ public class EncryptManager {
             }
             if(bean.encryptedPwd) {
                 bean.pwd = new String(decrypt.doFinal(hexToByte(bean.pwd)), StandardCharsets.UTF_16LE);
+                bean.encryptedPwd = false;
             }
-        } catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | NumberFormatException e) {
             Log.e("pm", "decryptAccount", e);
         }
     }
